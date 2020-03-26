@@ -40,8 +40,15 @@ if(!empty($_GET['id']))
         <script src="../../util/links/jquery-1.7.2.min.js"></script>
         <script src="../../util/jquery-ui.min.js"></script>
         <script src="../../util/jquery.ui.touch-punch.min.js"></script>
+        <script>var $j2 = jQuery.noConflict(true);</script>
         
-
+        <script src="../../util/links/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script src="../../util/links/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="../../util/links/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="../../util/links/jquery-ui.js"></script>
+        <script src="../../util/links/c0930358e4.js" crossorigin="anonymous"></script>
+        <script src="../../util/kanban.js"></script>
+        
     </head>
     <body>
         <div class="container">
@@ -427,13 +434,14 @@ if(!empty($_GET['id']))
                                                         <?php 
 
                                                         if($tarefas) foreach ($tarefas as $row) {
-                                                            if ($row['status'] == 'c') {
+                                                            if ($row['status'] == 'c' || $row['status'] == 'd') {
                                                                 $temp = $usuarioControle->readUsuario($row['usuario_id']);
                                                                 echo '<div class="portlet">';
                                                                     echo '<input type="hidden" class="tarefa_id" value="'.$row['id'].'">';
                                                                     echo '';
                                                                     echo '<div class="portlet-header">Peso: '.$row['peso'].'</div>';
                                                                     echo '<div class="portlet-content">'.$row['descricao'].'</div>';
+                                                                    echo '<div class="portlet-footer"><button class="portlet-icon btn btn-sm btn-link" data-toggle="modal" data-target="#conclusionModal" data-task-id="'.$row['id'].'" data-task-descricao="'.$row['descricao'].'"><i class="fas fa-check-square"></i></button></div>';
                                                                     echo '<div class="portlet-footer">'.$temp['usuario'].'</div>';
                                                                     echo '<div class="portlet-footer"><a class="portlet-icon" href="../Tarefa/update_tarefa.php?id='.$row['id'].'&projeto_id='.$data['id'].'"><i class="fas fa-edit"></i></a> <a class="portlet-icon" href="../Tarefa/delete_tarefa.php?id='.$row['id'].'&projeto_id='.$data['id'].'"><i class="fas fa-trash"></i></a></div>';
                                                                 echo '</div>';
@@ -473,6 +481,54 @@ if(!empty($_GET['id']))
                 </div>
             </div>
         </div>
+            
+            <div class="modal fade" id="conclusionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form name="terminar" id="terminar" action="detail_projeto.php?id=''" method="post">
+                                <div class="form-group">
+                                    <input type="hidden" name="task_id" class="form-control id" id="recipient-name">
+                                    <input type="hidden" name="project_id" value="<?php echo $data['id'] ?>">
+                                    <div class="form-group">
+                                        <label for="exampleFormControlFile1">Para finalizar a tarefa, selecione um ou mais arquivos</label>
+                                        <input type="file" multiple required id="arq" name="arq" class="form-control-file btn btn-sm btn-light" id="exampleFormControlFile1" />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Voltar</button>
+                            <button type="submit" id="terminarBtn" class="btn btn-primary">Concluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+            $('#conclusionModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var desc = button.data('task-descricao'); // Extract info from data-* attributes
+                var id = button.data('task-id');
+                // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+                // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+                var modal = $(this);
+                modal.find('.modal-title').text('Tarefa ' + desc);
+                modal.find('.id').val(id);
+            });
+            
+            $("#terminarBtn").click(function(e){
+                var arquivo = document.getElementById('arq');
+                if(arquivo.checkValidity())
+                    location.reload(true);
+            });
+            </script>
         
             <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
@@ -508,15 +564,10 @@ if(!empty($_GET['id']))
                 </div>
             </div>
             <script>
-                $('.portlet').draggable();
+                $j2('.portlet').draggable();
             </script>
 
-        <script src="../../util/links/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-        <script src="../../util/links/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="../../util/links/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-        <script type="text/javascript" src="../../util/links/jquery-ui.js"></script>
-        <script src="../../util/links/c0930358e4.js" crossorigin="anonymous"></script>
-        <script src="../../util/kanban.js"></script>
+        
         <p></p>
     </body>
 </html>

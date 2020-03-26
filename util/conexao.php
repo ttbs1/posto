@@ -13,7 +13,7 @@
  */
 class conexao {
     
-    private static $dbNome = 'arq';
+    private static $dbNome = 'posto';
     private static $dbHost = 'localhost';
     private static $dbUsuario = 'root';
     private static $dbSenha = '';
