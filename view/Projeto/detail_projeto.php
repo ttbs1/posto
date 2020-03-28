@@ -59,18 +59,19 @@ if(!empty($_GET['id']))
                 <div class="header-user">
                     <div class="dropdown show">
                         <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <img src="../../util/user.png" width="30px" height="30px">
+                            <i class="fas fa-user-friends" style="color: #ffc73d; font-size: 160%"></i>
                         </a>
 
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="#"><?php
+                            <a class="dropdown-item" href="#"><i class="fas fa-user"></i> 
+                                                                    <?php
                                                                     if(isset($_SESSION['usuario'])) {
                                                                         echo 'Usuário: '. $_SESSION['usuario'];
                                                                     } else {
                                                                         header("Location: ../login/login.php");
                                                                     } ?></a>
-                            <a class="dropdown-item" href="../Registro/list_registro.php">Log de registros</a>
-                            <a class="dropdown-item" href="../Home/logout.php">Sair</a>
+                            <a class="dropdown-item" href="../Registro/list_registro.php"><i class="fas fa-clipboard"></i> Log de registros</a>
+                            <a class="dropdown-item" href="../Home/logout.php"><i class="fas fa-door-open"></i> Sair</a>
                         </div>
                     </div>
                 </div>
@@ -131,7 +132,7 @@ if(!empty($_GET['id']))
                 <div class="progress" style="margin-bottom: 5px; opacity: 0.4">
                     <?php
                     if ($tarefas) foreach($tarefas as $row) {
-                        if ($row['status'] == 'a') { $cor = 'bg-danger'; } elseif ($row['status'] == 'b') { $cor = 'bg-warning'; } elseif ($row['status'] == 'c') { $cor = 'bg-success';}
+                        if ($row['status'] == 'a') { $cor = 'bg-danger'; } elseif ($row['status'] == 'b') { $cor = 'bg-warning'; } elseif ($row['status'] == 'c' || $row['status'] == 'd') { $cor = 'bg-success';}
                         echo '<div class="progress-bar progress-bar-striped '.$cor.'" role="progressbar" style="width: '.((($row['peso']/$peso_total)*100)) .'%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">'. floor((($row['peso']/$peso_total)*100)) .'%</div>';
                     }
                     ?>
@@ -250,7 +251,14 @@ if(!empty($_GET['id']))
                                                     $days = 0;
                                                 echo $days . ' dia(s)';
 
-                                                ?> <img name="info" id="info" class="info" src="https://cdn.pixabay.com/photo/2012/04/02/17/46/signs-25066_960_720.png" alt="A contagem considera o dia atual como dia de trabalho, exceto para fins de semana!" title="A contagem considera o dia atual como dia de trabalho, exceto para fins de semana!" width="13px" height="13px">
+                                                ?> <a href="javascript:;" onclick="popover();" data-toggle="popover" data-placement="right" title="Atenção!" data-content="A contagem considera o dia atual como dia de trabalho, exceto para fins de semana!"><i class="fas fa-info-circle" style="color: #ffc73d"></i></a>
+                                                <script>  
+                                                    $(function () {
+                                                        $('[data-toggle="popover"]').popover({
+                                                            trigger: 'focus'
+                                                        });
+                                                    });
+                                                </script>
                                             </label>
                                         </div>
                                     </div>
@@ -344,8 +352,7 @@ if(!empty($_GET['id']))
                                                 echo '<div class="iteration">';
                                                     echo '<input type="hidden" class="iteracao_id" value="'.$row['id'].'">';
                                                     echo '<div class="iteration-content">'.$row['descricao'].'</div>';
-                                                    echo '<div class="" style="text-align: right; font-size: smaller">'.$usuario['usuario'].' às '.$datahora->format('H:i:s').' em '.$datahora->format('d/m/Y').'</div>';
-                                                    
+                                                    echo '<div class="" style="text-align: right; font-size: smaller"><i class="far fa-comment-dots"></i> '.$usuario['usuario'].' às '.$datahora->format('H:i:s').' em '.$datahora->format('d/m/Y').'</div>';
                                                     if (($usuario['usuario'] == $_SESSION['usuario']) || ($_SESSION["permissao"]['adm'])) {
                                                         echo '<div style="text-align: right;">';
                                                         echo '<a href="../Iteracao/update_iteracao.php?id='.$row['id'].'&projeto='.$data['id'].'" style="font-size: smaller">Atualizar</a> <a href="../Iteracao/delete_iteracao.php?id='.$row['id'].'&projeto='.$data['id'].'" style="font-size: smaller">Excluir</a>';
@@ -427,7 +434,7 @@ if(!empty($_GET['id']))
 
                                                 </div>
                                                 
-                                                <div class="column flex" id="c">
+                                        <div class="column flex" id="c">
                                                    <!-- done -->
 
 
@@ -441,7 +448,11 @@ if(!empty($_GET['id']))
                                                                     echo '';
                                                                     echo '<div class="portlet-header">Peso: '.$row['peso'].'</div>';
                                                                     echo '<div class="portlet-content">'.$row['descricao'].'</div>';
-                                                                    echo '<div class="portlet-footer"><button class="portlet-icon btn btn-sm btn-link" data-toggle="modal" data-target="#conclusionModal" data-task-id="'.$row['id'].'" data-task-descricao="'.$row['descricao'].'"><i class="fas fa-check-square"></i></button></div>';
+                                                                    if($temp['usuario'] == $_SESSION['usuario'] || $_SESSION['permissao']['adm'])
+                                                                        if ($row['status'] == 'c')
+                                                                            echo '<div class="portlet-footer"><button style="color: #CC3333; font-size: large; padding-right: 0px" class="portlet-icon btn btn-link" data-toggle="modal" data-target="#conclusionModal" data-task-id="'.$row['id'].'" data-task-descricao="'.$row['descricao'].'"><i class="fas fa-camera"></i></button></div>';
+                                                                        else
+                                                                            echo '<div class="portlet-footer"><a href="provas.php?id='.$row['id'].'" style="color: green; font-size: large; margin-right:0em; padding-right: 0px" class="portlet-icon" ><i class="fas fa-file-image"></i></a></div>';
                                                                     echo '<div class="portlet-footer">'.$temp['usuario'].'</div>';
                                                                     echo '<div class="portlet-footer"><a class="portlet-icon" href="../Tarefa/update_tarefa.php?id='.$row['id'].'&projeto_id='.$data['id'].'"><i class="fas fa-edit"></i></a> <a class="portlet-icon" href="../Tarefa/delete_tarefa.php?id='.$row['id'].'&projeto_id='.$data['id'].'"><i class="fas fa-trash"></i></a></div>';
                                                                 echo '</div>';
@@ -492,13 +503,13 @@ if(!empty($_GET['id']))
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form name="terminar" id="terminar" action="detail_projeto.php?id=''" method="post">
+                            <form name="terminar" id="terminar" action="upload.php" method="post" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <input type="hidden" name="task_id" class="form-control id" id="recipient-name">
                                     <input type="hidden" name="project_id" value="<?php echo $data['id'] ?>">
                                     <div class="form-group">
                                         <label for="exampleFormControlFile1">Para finalizar a tarefa, selecione um ou mais arquivos</label>
-                                        <input type="file" multiple required id="arq" name="arq" class="form-control-file btn btn-sm btn-light" id="exampleFormControlFile1" />
+                                        <input type="file" required id="fileToUpload" name="fileToUpload" class="form-control-file btn btn-sm btn-light" id="exampleFormControlFile1" />
                                     </div>
                                 </div>
                             </form>
@@ -524,9 +535,13 @@ if(!empty($_GET['id']))
             });
             
             $("#terminarBtn").click(function(e){
-                var arquivo = document.getElementById('arq');
-                if(arquivo.checkValidity())
-                    location.reload(true);
+                var arquivo = document.getElementById('fileToUpload');
+                if(arquivo.checkValidity()) {
+                    $('#terminar').submit();
+                    setTimeout(function (){
+                        location.reload(true);
+                    }, 500);
+                }
             });
             </script>
         

@@ -34,6 +34,7 @@ include_once '../../controller/UsuarioControle.php';
         <script src="../../util/links/jquery-1.7.2.min.js"></script>
         <script src="../../util/jquery-ui.min.js"></script>
         <script src="../../util/jquery.ui.touch-punch.min.js"></script>
+        <script src="../../util/links/c0930358e4.js" crossorigin="anonymous"></script>
         
 
     </head>
@@ -46,18 +47,18 @@ include_once '../../controller/UsuarioControle.php';
                 <div class="header-user">
                     <div class="dropdown show">
                         <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <img src="../../util/user.png" width="30px" height="30px">
+                            <i class="fas fa-user-friends" style="color: #ffc73d; font-size: 160%"></i>
                         </a>
 
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="#"><?php
+                            <a class="dropdown-item" href="#"><i class="fas fa-user"></i> <?php
                                                                     if(isset($_SESSION['usuario'])) {
                                                                         echo 'Usuário: '. $_SESSION['usuario'];
                                                                     } else {
                                                                         header("Location: ../login/login.php");
                                                                     } ?></a>
-                            <a class="dropdown-item" href="../Registro/list_registro.php">Log de registros</a>
-                            <a class="dropdown-item" href="../Home/logout.php">Sair</a>
+                            <a class="dropdown-item" href="../Registro/list_registro.php"><i class="fas fa-clipboard"></i> Log de registros</a>
+                            <a class="dropdown-item" href="../Home/logout.php"><i class="fas fa-door-open"></i> Sair</a>
                         </div>
                     </div>
                 </div>

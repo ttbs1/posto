@@ -153,26 +153,35 @@ class TarefaControle {
             session_start();
             $data = $this->readTarefa($id);
             
-            if ((strcmp($data['status'], $status) != 0) && $status != 'a') {
-                if((strcmp($data['usuario_id'], $_SESSION['usuario_id']) == 0) || ($data['status'] == 'a')) {
+            if (!($data['status'] == 'd' && $status == 'c'))
+                if ((strcmp($data['status'], $status) != 0) && $status != 'a') {
+                    if((strcmp($data['usuario_id'], $_SESSION['usuario_id']) == 0) || ($data['status'] == 'a')) {
                     
-                    $sql = "UPDATE tarefa SET status = ?, usuario_id = ? WHERE id = ?";
-                    $q = $pdo->prepare($sql);
-                    
-                    if($status == 'a')
-                        $q->execute(array($status, NULL, $id));
-                    else
-                        $q->execute(array($status, $_SESSION['usuario_id'], $id));
+                        $date = new DateTime();
+                        $date->modify('-4 hours');
+                        $dateTime = $date->format("Y-m-d H:i:s");
+                        if ($status == 'd') {
+                            $sql = "UPDATE tarefa SET status = ?, termino = ? WHERE id = ?";
+                            $q = $pdo->prepare($sql);
+                            $q->execute(array($status, $dateTime, $id));
+                        } else {
+                            $sql = "UPDATE tarefa SET status = ?, usuario_id = ?, termino = ? WHERE id = ?";
+                            $q = $pdo->prepare($sql);
+                            if ($status == 'a')
+                                $q->execute(array($status, NULL, NULL, $id));
+                            else
+                                $q->execute(array($status, $_SESSION['usuario_id'], NULL, $id));
+                        }
 
-                    $sql3 = "INSERT INTO registro (usuario_id, acao, tabela, identificacao, datahora) VALUES (?,?,?,?,?)";
-                    $q = $pdo->prepare($sql3);
 
-                    $date = new DateTime();
-                    $date->modify('-4 hours');
-                    $dateTime = $date->format("Y-m-d H:i:s");
-                    $q->execute(array($_SESSION['usuario_id'], 'Atualização', 'Tarefa-Status', 'Projeto '.$data['projeto_id'].'->'.$data['descricao'], $dateTime));
+                        $sql3 = "INSERT INTO registro (usuario_id, acao, tabela, identificacao, datahora) VALUES (?,?,?,?,?)";
+                        $q = $pdo->prepare($sql3);
+
+                        $q->execute(array($_SESSION['usuario_id'], 'Atualização', 'Tarefa-Status', 'Projeto '.$data['projeto_id'].'->'.$data['descricao'], $dateTime));
+                    }
                 }
-            }
+        
+            
             $pdo = conexao::desconectar();
         } catch (Exception $ex) {
             echo 'Erro: '. $ex->getMessage();
@@ -183,25 +192,31 @@ class TarefaControle {
         try {
             $pdo = conexao::conectar();
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
             $data = $this->readTarefa($id);
             
-            if (strcmp($data['status'], $status) != 0) {
-                $sql = "UPDATE tarefa SET status = ?, usuario_id = ? WHERE id = ?";
-                $q = $pdo->prepare($sql);
-                if($status == 'a')
-                    $q->execute(array($status, NULL, $id));
-                else
-                    $q->execute(array($status, $usuario, $id));
-                
-                $sql3 = "INSERT INTO registro (usuario_id, acao, tabela, identificacao, datahora) VALUES (?,?,?,?,?)";
-                $q = $pdo->prepare($sql3);
-                
-                $date = new DateTime();
-                $date->modify('-4 hours');
-                $dateTime = $date->format("Y-m-d H:i:s");
-                $q->execute(array($_SESSION['usuario_id'], 'Atualização', 'Tarefa-Status', 'Projeto '.$data['projeto_id'].'->'.$data['descricao'], $dateTime));
-            }
+            $date = new DateTime();
+            $date->modify('-4 hours');
+            $dateTime = $date->format("Y-m-d H:i:s");
+            
+            if (!($data['status'] == 'd' && $status == 'c'))
+                if (strcmp($data['status'], $status) != 0 || ($data['status'] == 'd' && $status == 'd')) {
+                    if ($status == 'd') {
+                        $sql = "UPDATE tarefa SET status = ?, termino = ? WHERE id = ?";
+                        $q = $pdo->prepare($sql);
+                        $q->execute(array($status, $dateTime, $id));
+                    } else {
+                        $sql = "UPDATE tarefa SET status = ?, usuario_id = ?, termino = ? WHERE id = ?";
+                        $q = $pdo->prepare($sql);
+                        if($status == 'a')
+                            $q->execute(array($status, NULL, NULL, $id));
+                        else
+                            $q->execute(array($status, $usuario, NULL, $id));
+                    }
+
+                    $sql3 = "INSERT INTO registro (usuario_id, acao, tabela, identificacao, datahora) VALUES (?,?,?,?,?)";
+                    $q = $pdo->prepare($sql3);
+                    $q->execute(array($_SESSION['usuario_id'], 'Atualização', 'Tarefa-Status', 'Projeto '.$data['projeto_id'].'->'.$data['descricao'], $dateTime));
+                }
             $pdo = conexao::desconectar();
         } catch (Exception $ex) {
             echo 'Erro: '. $ex->getMessage();
